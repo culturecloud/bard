@@ -77,14 +77,14 @@ class BardAsync:
         self.cookie_dict = {"__Secure-1PSID": self.token}
         self.run_code = run_code or False
         self.google_translator_api_key = google_translator_api_key
-        self.SNlM0e = self._get_snim0e()
-
+        self.SNlM0e = None
+        
         if self.google_translator_api_key is not None:
             from langdetect import detect
             from deep_translator import GoogleTranslator
             from google.cloud import translate_v2 as translate
 
-    def _get_snim0e(self):
+    async def _get_snim0e(self):
         """
         Asynchronously retrieves the SNlM0e value from a specified URL.
 
@@ -95,15 +95,13 @@ class BardAsync:
 
         :return: The SNlM0e value as a string.
         """
-        if isinstance(self.SNlM0e, str):
-            return self.SNlM0e
-
+        
         if not self.token or self.token[-1] != ".":
             raise Exception(
                 "__Secure-1PSID value must end with a single dot. Enter correct __Secure-1PSID value."
             )
 
-        resp = self.client.get(
+        resp = await self.client.get(
             "https://bard.google.com/", timeout=self.timeout, follow_redirects=True
         )
         if resp.status_code != 200:
@@ -145,7 +143,7 @@ class BardAsync:
                 "Bard API Key must be provided as token argument or extracted from browser."
             )
 
-    async def _get_client(self, session: Optional[AsyncClient]) -> AsyncClient:
+    def _get_client(self, session: Optional[AsyncClient]) -> AsyncClient:
         """
         The _get_snim0e function is used to get the SNlM0e value from the Bard website.
 
@@ -203,6 +201,9 @@ class BardAsync:
                     "status_code": int
                 }
         """
+        if not isinstance(self.SNlM0e, str):
+            self.SNlM0e = await self._get_snim0e()
+    
         params = {
             "bl": TEXT_GENERATION_WEB_SERVER_PARAM,
             "_reqid": str(self._reqid),
@@ -376,6 +377,9 @@ class BardAsync:
                 "status_code": int
             }
         """
+        if not isinstance(self.SNlM0e, str):
+            self.SNlM0e = await self._get_snim0e()
+            
         params = {
             "bl": TEXT_GENERATION_WEB_SERVER_PARAM,
             "_reqid": str(self._reqid),
@@ -438,6 +442,9 @@ class BardAsync:
                 "status_code": int
             }
         """
+        if not isinstance(self.SNlM0e, str):
+            self.SNlM0e = await self._get_snim0e()
+            
         conv_id = bard_answer["conversation_id"]
         resp_id = bard_answer["response_id"]
         choice_id = bard_answer["choices"][0]["id"]
@@ -529,6 +536,9 @@ class BardAsync:
             }
 
         """
+        if not isinstance(self.SNlM0e, str):
+            self.SNlM0e = await self._get_snim0e()
+            
         params = {
             "rpcids": "qACoKe",
             "source-path": kwargs.get("source_path", "/"),
@@ -638,7 +648,7 @@ class BardAsync:
                 }
         """
         if not isinstance(self.SNlM0e, str):
-            self.SNlM0e = await self.SNlM0e
+            self.SNlM0e = await self._get_snim0e()
 
         if self.google_translator_api_key is not None:
             google_official_translator = translate.Client(
@@ -787,7 +797,7 @@ class BardAsync:
         tool: Optional[Tool] = None,
     ) -> BardResult:
         if not isinstance(self.SNlM0e, str):
-            self.SNlM0e = await self.SNlM0e
+            self.SNlM0e = await self._get_snim0e()
 
         if image is not None:
             image_url = upload_image(image)

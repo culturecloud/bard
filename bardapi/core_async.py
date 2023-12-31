@@ -654,9 +654,7 @@ class BardAsync:
             google_official_translator = translate.Client(
                 api_key=self.google_translator_api_key
             )
-        else:
-            translator_to_eng = GoogleTranslator(source="auto", target="en")
-
+            
         # [Optional] Set language
         if self.language is None or lang is None:
             translated_input_text = input_text
